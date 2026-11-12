@@ -5,18 +5,20 @@ Keyboard-shortcut sets for the [Flux Keyboard](https://fluxkeyboard.com), in the
 | File | Application | Shortcuts | Platforms | Source of the bindings |
 |---|---|---|---|---|
 | `freecad.flux` | FreeCAD | 104 | Windows, Mac | Default accelerators in the FreeCAD 1.1.4 source |
+| `firefox.flux` | Firefox, plus its developer tools | 147 | Windows, Mac | Firefox's own key definitions on the `beta` branch (161.0b3), plus Mozilla's support page and DevTools docs |
 | `terminal.flux` | Apple Terminal, plus Claude Code | 109 | Mac | Apple's Terminal shortcut list and the Claude Code interactive-mode docs |
 | `claude.flux` | Claude desktop app | 59 | Mac (Windows inferred) | The app's own Cmd+/ shortcut panel, November 2026 |
 
-This is an unofficial project. It is not affiliated with or endorsed by Flux Keyboard, FreeCAD, Apple or Anthropic.
+This is an unofficial project. It is not affiliated with or endorsed by Flux Keyboard, FreeCAD, Mozilla, Apple or Anthropic.
 
 ## What's in this repository
 
 | Path | What it is |
 |---|---|
-| `freecad.flux`, `terminal.flux`, `claude.flux` | The shortcut files. Download these if you only want to use them |
+| `freecad.flux`, `firefox.flux`, `terminal.flux`, `claude.flux` | The shortcut files. Download these if you only want to use them |
 | `tools/fluxlib.py` | Small Python library that reads and writes `.flux` files |
 | `tools/build_freecad.py` | Generates `freecad.flux` |
+| `tools/build_firefox.py` | Generates `firefox.flux` |
 | `tools/build_terminal.py` | Generates `terminal.flux` |
 | `tools/build_claude.py` | Generates `claude.flux`; the simplest one to copy for a new application |
 | `tools/inspect_flux.py` | Prints the contents of any `.flux` file |
@@ -42,6 +44,27 @@ The files follow the structure of a shortcut file exported from Polymath and pas
 
 - Only single-chord shortcuts are included. FreeCAD's multi-key sequences, such as `G, L` for Line or `V, F` for Fit All, cannot be expressed in this format.
 - Where Windows and Mac use different physical keys (Redo, Delete, Help, Close Window), there is one entry per platform with the same label.
+
+**`firefox.flux`**
+
+| Group | Count | Examples |
+|---|---|---|
+| Popular shortcuts | 18 | New Tab, Reopen Closed Tab, Address Bar, Find in Page, Back, Zoom |
+| Navigation | 18 | Hard Reload, Stop, Top of Page, Open in New Tab |
+| Tabs and windows | 17 | Next/Previous Tab, Move Tab, Search Tabs, Mute Tab |
+| Find and edit | 13 | Find Next, Undo, Redo, Paste as Plain Text |
+| Bookmarks and history | 10 | Bookmarks Sidebar, Show All History, Clear History |
+| View and tools | 21 | Full Screen, Reader View, Picture-in-Picture, Screenshot, Add-ons |
+| Developer tools | 18 | Toggle Tools, Inspector, Web Console, Debugger, Network |
+| DevTools toolbox | 15 | Next Tool, Resume, Step Over, Toggle Breakpoint |
+| PDF viewer | 8 | Next Page, Rotate, Presentation Mode |
+| default | 9 | Tab 1–8, Last Tab |
+
+- Built against Firefox 161 (the beta and Developer Edition channel at the time). Regular Firefox and Developer Edition share the same shortcuts, so link the profile to whichever you run.
+- Bindings come from Firefox's own key definitions where they exist, and those sometimes differ from Mozilla's support page. In 161, Add-ons is Cmd+Shift+E on Mac and Ctrl+Shift+F on Windows, and Cmd/Ctrl+Shift+A is Search Tabs.
+- Many shortcuts differ between Mac and Windows (Back, History, Full Screen, Reader View, the sidebars). Those have one entry per platform with the same label. Linux has a few differences of its own that are not covered.
+- If "Ctrl+Tab cycles through tabs in recently used order" is turned on in Firefox's settings, Ctrl+Shift+Tab shows all tabs; the file labels it Previous Tab, which is the default behaviour.
+- Several chords mean something different inside the developer tools: Cmd+[ is Back in a page and Previous Tool in the toolbox. Those live in separate groups.
 
 **`terminal.flux`**
 
@@ -78,7 +101,7 @@ The menu names below are from Polymath 1.4.5.7 and may differ in other versions.
 
 1. Download the `.flux` file you want.
 2. In Polymath, go to **SHORTCUTS → Create New → Import** and choose the file.
-3. Create a profile for the application, or open the one the import created. Set its associated application (FreeCAD, Terminal or Claude) and select the imported shortcut set as that profile's shortcuts.
+3. Create a profile for the application, or open the one the import created. Set its associated application (FreeCAD, Firefox, Terminal or Claude) and select the imported shortcut set as that profile's shortcuts.
 4. Click **Save to Keyboard**. The keyboard does the switching itself, so the profile has to be stored on it.
 5. Leave Polymath running. Automatic switching by active window needs it.
 6. Open the application. Shortcuts that use a modifier appear while you hold that modifier.
@@ -201,7 +224,7 @@ To build a full profile, export one of your own profiles from Polymath, keep its
 
 ## Make your own
 
-The scripts in `tools/` generated the three files in this repository, and each builder reproduces its file byte for byte. To make a file for another application, describe its shortcuts as rows and let `fluxlib` write the file.
+The scripts in `tools/` generated the files in this repository, and each builder reproduces its file byte for byte. To make a file for another application, describe its shortcuts as rows and let `fluxlib` write the file.
 
 ### A minimal builder
 
@@ -244,6 +267,7 @@ How a row works:
 | Script | Use |
 |---|---|
 | `python tools/build_freecad.py [output.flux]` | Rebuild `freecad.flux`. Each row names the FreeCAD command it came from, so bindings can be checked against the FreeCAD source |
+| `python tools/build_firefox.py [output.flux]` | Rebuild `firefox.flux`. Each row names the Firefox `<key>` id or the document it came from |
 | `python tools/build_terminal.py [output.flux]` | Rebuild `terminal.flux` |
 | `python tools/build_claude.py [output.flux]` | Rebuild `claude.flux` |
 | `python tools/inspect_flux.py file.flux [--keys]` | Summarise any `.flux` file, including full profile exports; `--keys` lists every shortcut |
@@ -263,6 +287,7 @@ To change a shortcut set, edit the rows in its builder and run it again. The doc
 
 - [D6D/flux_app_profiles](https://github.com/D6D/flux_app_profiles) (MIT) documented the attachment section of the container, the profile fields and the import steps.
 - FreeCAD bindings come from the [FreeCAD source](https://github.com/FreeCAD/FreeCAD) at tag 1.1.4.
+- Firefox bindings come from the [Firefox source](https://github.com/mozilla-firefox/firefox) (`beta` branch, 161.0b3), the support article [Keyboard shortcuts - Perform common Firefox tasks quickly](https://support.mozilla.org/en-US/kb/keyboard-shortcuts-perform-firefox-tasks-quickly) and the DevTools [All keyboard shortcuts](https://firefox-source-docs.mozilla.org/devtools-user/keyboard_shortcuts/) page.
 - Terminal bindings come from Apple's [Keyboard shortcuts in Terminal on Mac](https://support.apple.com/guide/terminal/trmlshtcts).
 - Claude Code bindings come from the [interactive mode reference](https://code.claude.com/docs/en/interactive-mode).
 
